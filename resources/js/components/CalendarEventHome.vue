@@ -11,14 +11,23 @@
                             <div class="mb-3">
                                 <label for="exampleFormControlInput1" class="form-label">Event</label>
                                 <input type="text" @keyup="reEvaluate" class="form-control form-control-sm" id="exampleFormControlInput1" placeholder="Event Title" @change="reEvaluate" v-model="event.title">
+                                <div class="invalid-feedback" v-if="errors.title">
+                                    {{errors.title[0]}}
+                                </div>
                             </div>
                             <div class="mb-3">
                                 <label for="exampleFormControlTextarea1" class="form-label">From</label>
                                 <input type="date" @keyup="reEvaluate" name="" class="form-control form-control-sm" v-model="event.start" id="">
+                                <div class="invalid-feedback" v-if="errors.start">
+                                    {{errors.start[0]}}
+                                </div>
                             </div>
                             <div class="mb-3">
                                 <label for="exampleFormControlTextarea1" class="form-label">To</label>
                                 <input type="date" @keyup="reEvaluate" name="" class="form-control form-control-sm" v-model="event.end" id="">
+                                <div class="invalid-feedback" v-if="errors.end">
+                                    {{errors.end[0]}}
+                                </div>
                             </div>
                             <div class="form-check form-check-inline">
                                 <input class="form-check-input" @change="reEvaluate" v-model="event.days" type="checkbox" name="inlineRadioOptions" id="inlineRadio1" value="Monday">
@@ -48,6 +57,9 @@
                                 <input class="form-check-input" @change="reEvaluate" v-model="event.days" type="checkbox" name="inlineRadioOptions" id="inlineRadio3" value="Sunday" >
                                 <label class="form-check-label" for="inlineRadio3">Sun</label>
                             </div>
+                            <div class="invalid-feedback" v-if="errors.days">
+                                    {{errors.days[0]}}
+                                </div>
                             <div class="mb-3">
                                 <button class="btn btn-primary" @click="submit">Submit</button>
                             </div>
@@ -100,7 +112,8 @@ export default {
             on_change: false,
             events: [],
             calendars: [],
-            list: false
+            list: false,
+            errors: []
         }
     },
     created() {
@@ -117,21 +130,29 @@ export default {
                     }
                 })
         },
-        submit() {
-            this.$API.Event_api.saveEvent(this.event)
-                .then(res => {
-                    console.log(res);
-                    this.getEvents();
-                    this.event = {
-                        title: null,
-                        start: null,
-                        end: null,
-                        days: [],
-                    }
-                })
-                .catch(err => {
-                    console.log(err);
-                })
+        async submit() {
+            try {
+                const res = await this.$API.Event_api.saveEvent(this.event);
+                this.event = {
+                    title: null,
+                    start: null,
+                    end: null,
+                    days: []
+                }
+                console.log(res);
+                this.errors = []
+                this.getEvents();
+            } catch (error) {
+                switch (error.response.status) {
+                    case 422:
+                        this.errors = error.response.data.errors
+                        break;
+
+                    default:
+                        console.log(error);
+                        break;
+                }
+            }
         },
         reEvaluate() {
             this.on_change = true
@@ -260,5 +281,8 @@ export default {
     }
     .calendar {
         padding: 10px;
+    }
+    .invalid-feedback {
+        display: inline !important;
     }
 </style>

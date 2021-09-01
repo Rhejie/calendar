@@ -10,7 +10,7 @@ class EventsController extends Controller
     //
     public function getEvents() {
 
-        $events = Events::get(['title','start', 'end', 'days']);
+        $events = Events::latest()->take(1)->get(['title','start', 'end', 'days']);
 
         return response()->json($events, 200);
 
@@ -23,11 +23,6 @@ class EventsController extends Controller
             'end' => 'required|date|after_or_equal:start',
             'days' => 'required',
         ]);
-        // dd($request->all());
-        $ev = Events::get()->first();
-        if(!empty($ev)) {
-            $ev->delete();
-        }
 
 
         $event = Events::create([
