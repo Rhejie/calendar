@@ -19,8 +19,8 @@ class EventsController extends Controller
     public function addEvent(Request $request) {
         $request->validate([
             'title' => 'required',
-            'start' => 'required',
-            'end' => 'required',
+            'start' => 'required|date',
+            'end' => 'required|date|after_or_equal:start',
             'days' => 'required',
         ]);
         // dd($request->all());
