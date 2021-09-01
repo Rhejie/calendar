@@ -267,6 +267,9 @@ export default {
                     startDate = ev.start;
                     endDate = ev.end
                 });
+                if(new Date(startDate).getMonth() === new Date(endDate).getMonth()) {
+                    return new Date(startDate).toLocaleString('default', {month: 'long'}) + ' ' + new Date(startDate).getFullYear()
+                }
                 return new Date(startDate).toLocaleString('default', {month: 'long'}) + ' ' +
                     new Date(startDate).getFullYear() + ' - ' + new Date(endDate).toLocaleString('default', {month: 'long'})  + ' ' +
                     new Date(endDate).getFullYear()
