@@ -71,7 +71,7 @@
                                 <thead>
                                     <th colspan="3" style="border-top: none; border-bottom: 3px solid black">{{ getYearMonth }}</th>
                                 </thead>
-                                <tbody>
+                                <tbody v-loading="loading">
                                     <div v-show="list">
                                         <div v-for="(date, index) in events" :key="index">
                                             <tr v-for="(td, index) in add_rows(date)" :key="index">
@@ -113,7 +113,8 @@ export default {
             events: [],
             calendars: [],
             list: false,
-            errors: []
+            errors: [],
+            loading: false,
         }
     },
     created() {
@@ -121,9 +122,11 @@ export default {
     },
     methods: {
         getEvents() {
+            this.loading = true
             this.$API.Event_api.getEvents()
                 .then(res => {
                     this.events = res.data
+                    this.loading = false;
                     if(this.events.length > 0) {
                         this.list = true;
                         console.log(this.list);
@@ -142,6 +145,11 @@ export default {
                 console.log(res);
                 this.errors = []
                 this.getEvents();
+                this.$notify({
+                    title: 'Success',
+                    message: 'Successfully added!',
+                    type: 'success'
+                });
             } catch (error) {
                 switch (error.response.status) {
                     case 422:
