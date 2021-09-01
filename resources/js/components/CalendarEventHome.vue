@@ -260,6 +260,17 @@ export default {
             return this.breakdown(date)
         },
         getYearMonth(){
+            if(this.events.length > 0) {
+                let startDate = '';
+                let endDate = '';
+                this.events.forEach(ev => {
+                    startDate = ev.start;
+                    endDate = ev.end
+                });
+                return new Date(startDate).toLocaleString('default', {month: 'long'}) + ' ' +
+                    new Date(startDate).getFullYear() + ' - ' + new Date(endDate).toLocaleString('default', {month: 'long'})  + ' ' +
+                    new Date(endDate).getFullYear()
+            }
             if(!this.event.start && !this.event.end){
                 this.getDays(this.from.what_year, this.from.what_month)
                 return this.from.what_month + ' ' + this.from.what_year
